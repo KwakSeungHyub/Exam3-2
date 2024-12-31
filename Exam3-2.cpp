@@ -14,12 +14,22 @@ public:
     SimpleVector(size_t capacity = 10)
         : data(new T[capacity]), capa_1(capacity), size_1(0) {
     }
-
+   // 복사 생성자
+    SimpleVector(const SimpleVector& other)
+        : data(new T[other.capa_1]), capa_1(other.capa_1), size_1(other.size_1) {
+        for (size_t i = 0; i < size_1; ++i) {
+            data[i] = other.data[i]; // 기존 데이터를 하나씩 복사
+        }
+        std::cout << "복사 생성자 호출" << std::endl;
+    }
     // 소멸자: 동적 메모리 해제
     ~SimpleVector() {
         delete[] data;
     }
-
+    // copy: 복사생성자를 활용한 함수 추가
+    SimpleVector copy() const {
+        return SimpleVector(*this);
+    };
     // push_back: 배열의 맨 끝에 원소를 추가
     void push_back(const T& element) {
         if (size_1 >= capa_1) {
@@ -27,9 +37,10 @@ public:
             size_t new_capacity = capa_1 + 5;
             T* new_data = new T[new_capacity];
 
-            // 기존 데이터를 복사
+            // 기존 데이터를 복사 (복사 생성자 호출)
+            SimpleVector<T> temp(*this);  // 복사 생성자 호출하여 데이터를 복사
             for (size_t i = 0; i < size_1; ++i) {
-                new_data[i] = data[i];
+                new_data[i] = temp.data[i];  // temp 객체의 data 배열을 새로운 배열로 복사
             }
 
             // 기존 메모리 해제 및 교체
@@ -41,6 +52,7 @@ public:
         // 데이터 추가
         data[size_1++] = element;
     }
+
     // resize: 정수 하나를 받아 현재 사이즈보다 작을 경우 -> 아무 동작 x 클 경우 -> 해당 값만큼 크기를 재 할당
     void resize(const T& size) {
         //클 경우에는 해당 값만큼 크기를 재 할당
@@ -49,9 +61,10 @@ public:
             size_t new_capacity = size;
             T* new_data = new T[size];
 
-            // 기존 데이터를 복사
-            for (size_t i = 0; i < size; ++i) {
-                new_data[i] = data[i];
+            // 기존 데이터를 복사 (복사 생성자 호출)
+            SimpleVector<T> temp(*this);  // 복사 생성자 호출하여 데이터를 복사
+            for (size_t i = 0; i < size_1; ++i) {
+                new_data[i] = temp.data[i];  // temp 객체의 data 배열을 새로운 배열로 복사
             }
 
             // 기존 메모리 해제 및 교체
